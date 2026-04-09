@@ -13,7 +13,7 @@ export default async function Dashboard() {
   
   // If user has only one organization, redirect directly to it
   if (organizations.length === 1) {
-    const org = organizations[0].organizations
+    const org = (organizations[0] as any).organizations
     if (org) {
       redirect(`/org/${org.slug}`)
     }
