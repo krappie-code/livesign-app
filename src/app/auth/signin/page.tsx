@@ -5,13 +5,13 @@ import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { Database } from '@/types/database'
+
 
 export default function SignIn() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get('redirectTo')
-  const [supabase] = useState(() => createClientComponentClient<Database>())
+  const [supabase] = useState(() => createClientComponentClient())
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
