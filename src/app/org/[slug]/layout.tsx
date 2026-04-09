@@ -16,17 +16,17 @@ export default async function OrgLayout({ children, params }: OrganizationLayout
   
   const organizations = await getUserOrganizations(user.id)
   const currentOrg = organizations.find(
-    (org) => org.organizations?.slug === params.slug
+    (org) => (org as any).organizations?.slug === params.slug
   )
   
-  if (!currentOrg || !currentOrg.organizations) {
+  if (!currentOrg || !(currentOrg as any).organizations) {
     notFound()
   }
   
   return (
     <OrganizationLayout 
-      organization={currentOrg.organizations}
-      userRole={currentOrg.roles}
+      organization={(currentOrg as any).organizations}
+      userRole={(currentOrg as any).roles}
       user={profile}
     >
       {children}
