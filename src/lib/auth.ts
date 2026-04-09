@@ -121,7 +121,7 @@ export async function hasPermission(
       return false
     }
     
-    const permissions = data.roles?.permissions || []
+    const permissions = (data as any).roles?.permissions || []
     
     // Check if user has wildcard permission
     if (permissions.includes('*')) {

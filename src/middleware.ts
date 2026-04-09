@@ -52,7 +52,7 @@ export async function middleware(req: NextRequest) {
     }
 
     // Add organization context to headers for use in components
-    res.headers.set('x-organization-id', userRoles.organization_id)
+    res.headers.set('x-organization-id', (userRoles as any).organization_id)
     res.headers.set('x-organization-slug', orgSlug)
 
     return res

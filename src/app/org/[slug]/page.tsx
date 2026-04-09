@@ -5,6 +5,8 @@ interface OrgDashboardProps {
   params: { slug: string }
 }
 
+export const dynamic = 'force-dynamic'
+
 export default async function OrgDashboard({ params }: OrgDashboardProps) {
   const { user } = await getUserWithProfile()
   

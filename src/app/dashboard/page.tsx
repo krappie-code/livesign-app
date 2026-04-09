@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation'
 import { getUserWithProfile, getUserOrganizations } from '@/lib/auth'
 import { OrganizationSelector } from '@/components/dashboard/organization-selector'
 
+export const dynamic = 'force-dynamic'
+
 export default async function Dashboard() {
   const { user, profile } = await getUserWithProfile()
   

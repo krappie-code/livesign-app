@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 
+export const dynamic = 'force-dynamic'
+
 export default function SignUp() {
   const router = useRouter()
   const [supabase] = useState(() => createClientComponentClient())
@@ -50,7 +52,7 @@ export default function SignUp() {
               }
             }}
             providers={['google', 'github']}
-            redirectTo={`${location.origin}/auth/callback`}
+            redirectTo={typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : '/auth/callback'}
             showLinks={true}
           />
         </div>

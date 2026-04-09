@@ -7,6 +7,8 @@ interface OrganizationLayoutProps {
   params: { slug: string }
 }
 
+export const dynamic = 'force-dynamic'
+
 export default async function OrgLayout({ children, params }: OrganizationLayoutProps) {
   const { user, profile } = await getUserWithProfile()
   

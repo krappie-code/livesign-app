@@ -4,10 +4,10 @@ import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 
 
-export default function SignIn() {
+function SignInForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get('redirectTo')
@@ -52,7 +52,7 @@ export default function SignIn() {
               }
             }}
             providers={['google', 'github']}
-            redirectTo={`${location.origin}/auth/callback`}
+            redirectTo={typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : '/auth/callback'}
             showLinks={true}
           />
         </div>
@@ -70,5 +70,15 @@ export default function SignIn() {
         </div>
       </div>
     </div>
+  )
+}
+
+export const dynamic = 'force-dynamic'
+
+export default function SignIn() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SignInForm />
+    </Suspense>
   )
 }
