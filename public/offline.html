@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LiveSign - Offline</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #000;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+    }
+    
+    .container {
+      max-width: 600px;
+      padding: 2rem;
+    }
+    
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+    
+    p {
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+      opacity: 0.8;
+    }
+    
+    .icon {
+      font-size: 4rem;
+      margin-bottom: 2rem;
+      opacity: 0.6;
+    }
+    
+    .retry-btn {
+      background-color: #3B82F6;
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .retry-btn:hover {
+      background-color: #2563EB;
+    }
+    
+    .status {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      opacity: 0.6;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+    
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon pulse">📡</div>
+    <h1>Display Offline</h1>
+    <p>This LiveSign display is currently offline. The slideshow will resume automatically when the connection is restored.</p>
+    
+    <button class="retry-btn" onclick="retry()">Retry Connection</button>
+    
+    <div class="status" id="status">
+      Checking connection status...
+    </div>
+  </div>
+
+  <script>
+    let retryInterval;
+    
+    function updateStatus(message) {
+      document.getElementById('status').textContent = message;
+    }
+    
+    function checkConnection() {
+      if (navigator.onLine) {
+        updateStatus('Connection detected. Attempting to reload...');
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } else {
+        updateStatus('Still offline. Will retry automatically...');
+      }
+    }
+    
+    function retry() {
+      updateStatus('Retrying connection...');
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+    }
+    
+    // Check connection status periodically
+    function startRetryLoop() {
+      retryInterval = setInterval(checkConnection, 10000); // Check every 10 seconds
+    }
+    
+    // Listen for online events
+    window.addEventListener('online', () => {
+      updateStatus('Connection restored! Reloading...');
+      if (retryInterval) {
+        clearInterval(retryInterval);
+      }
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    });
+    
+    window.addEventListener('offline', () => {
+      updateStatus('Connection lost. Waiting for reconnection...');
+      startRetryLoop();
+    });
+    
+    // Initial check
+    if (navigator.onLine) {
+      updateStatus('Connection available. Attempting to reload...');
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    } else {
+      updateStatus('No connection detected. Will retry automatically.');
+      startRetryLoop();
+    }
+  </script>
+</body>
+</html>
