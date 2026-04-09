@@ -43,7 +43,7 @@ export default async function Dashboard() {
                 No Organizations Yet
               </h2>
               <p className="text-gray-600 mb-6">
-                You don't belong to any organizations yet. Create your first organization or ask to be invited to an existing one.
+                You don&apos;t belong to any organizations yet. Create your first organization or ask to be invited to an existing one.
               </p>
               <a
                 href="/onboarding"
