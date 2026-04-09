@@ -14,15 +14,15 @@ export default async function OrgDashboard({ params }: OrgDashboardProps) {
   
   const organizations = await getUserOrganizations(user.id)
   const currentOrg = organizations.find(
-    (org) => org.organizations?.slug === params.slug
+    (org) => (org as any).organizations?.slug === params.slug
   )
   
-  if (!currentOrg?.organizations) {
+  if (!(currentOrg as any)?.organizations) {
     redirect('/dashboard')
   }
   
-  const org = currentOrg.organizations
-  const role = currentOrg.roles
+  const org = (currentOrg as any).organizations
+  const role = (currentOrg as any).roles
   
   return (
     <div className="py-6">
