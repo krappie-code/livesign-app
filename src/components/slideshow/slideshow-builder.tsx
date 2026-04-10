@@ -316,7 +316,7 @@ export function SlideshowBuilder({
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading slideshow builder...</p>
+          <p className="text-gray-800">Loading slideshow builder...</p>
         </div>
       </div>
     )
@@ -330,7 +330,7 @@ export function SlideshowBuilder({
           <h1 className="text-2xl font-bold">
             {slideshow ? 'Edit Slideshow' : 'Create Slideshow'}
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-800">
             Build your digital signage slideshow by adding content and arranging slides
           </p>
         </div>

@@ -198,7 +198,7 @@ export function ContentLibrary({
       <div className="flex items-center justify-center p-8">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading content library...</p>
+          <p className="text-gray-800">Loading content library...</p>
         </div>
       </div>
     )
@@ -229,10 +229,10 @@ export function ContentLibrary({
             >
               <input {...getInputProps()} />
               <Upload className="h-8 w-8 mx-auto mb-4 text-gray-400" />
-              <p className="text-sm text-gray-600 mb-2">
+              <p className="text-sm text-gray-700 mb-2">
                 {isDragActive ? 'Drop images here' : 'Drag & drop images, or click to select'}
               </p>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-600">
                 JPG, PNG, WebP up to 10MB
               </p>
             </div>
@@ -258,7 +258,7 @@ export function ContentLibrary({
                       style={{ width: `${progress}%` }}
                     />
                   </div>
-                  <span className="text-xs text-gray-600">{progress}%</span>
+                  <span className="text-xs text-gray-700">{progress}%</span>
                 </div>
               ))}
             </div>
@@ -282,7 +282,7 @@ export function ContentLibrary({
             {/* Content Info */}
             <div className="p-2 bg-white">
               <p className="text-xs font-medium truncate">{item.name}</p>
-              <p className="text-xs text-gray-500 capitalize">{item.type}</p>
+              <p className="text-xs text-gray-600 capitalize">{item.type}</p>
             </div>
 
             {/* Delete Button */}

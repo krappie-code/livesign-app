@@ -178,7 +178,7 @@ export function SlideshowDashboard({ organizationId }: SlideshowDashboardProps) 
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600">Initializing...</p>
+          <p className="text-gray-800">Initializing...</p>
         </div>
       </div>
     )
@@ -207,7 +207,7 @@ export function SlideshowDashboard({ organizationId }: SlideshowDashboardProps) 
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading slideshows...</p>
+          <p className="text-gray-800">Loading slideshows...</p>
         </div>
       </div>
     )
@@ -219,7 +219,7 @@ export function SlideshowDashboard({ organizationId }: SlideshowDashboardProps) 
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Digital Signage</h1>
-          <p className="text-gray-600">Manage your slideshows and displays</p>
+          <p className="text-gray-800">Manage your slideshows and displays</p>
         </div>
         <Button onClick={createSlideshow} className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
@@ -233,7 +233,7 @@ export function SlideshowDashboard({ organizationId }: SlideshowDashboardProps) 
           <CardContent className="p-6">
             <div className="flex items-center">
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600">Total Slideshows</p>
+                <p className="text-sm font-medium text-gray-700">Total Slideshows</p>
                 <p className="text-2xl font-bold text-gray-900">{slideshows.length}</p>
               </div>
               <Play className="h-8 w-8 text-blue-500" />
@@ -245,7 +245,7 @@ export function SlideshowDashboard({ organizationId }: SlideshowDashboardProps) 
           <CardContent className="p-6">
             <div className="flex items-center">
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600">Active Displays</p>
+                <p className="text-sm font-medium text-gray-700">Active Displays</p>
                 <p className="text-2xl font-bold text-gray-900">
                   {slideshows.filter(s => s.is_active).length}
                 </p>
@@ -259,7 +259,7 @@ export function SlideshowDashboard({ organizationId }: SlideshowDashboardProps) 
           <CardContent className="p-6">
             <div className="flex items-center">
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600">Total Views</p>
+                <p className="text-sm font-medium text-gray-700">Total Views</p>
                 <p className="text-2xl font-bold text-gray-900">
                   {slideshows.reduce((sum, s) => sum + s.view_count, 0)}
                 </p>
@@ -273,7 +273,7 @@ export function SlideshowDashboard({ organizationId }: SlideshowDashboardProps) 
           <CardContent className="p-6">
             <div className="flex items-center">
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600">Total Slides</p>
+                <p className="text-sm font-medium text-gray-700">Total Slides</p>
                 <p className="text-2xl font-bold text-gray-900">
                   {slideshows.reduce((sum, s) => sum + (s.slideshow_slides?.length || 0), 0)}
                 </p>
@@ -293,7 +293,7 @@ export function SlideshowDashboard({ organizationId }: SlideshowDashboardProps) 
               <h3 className="text-lg font-medium text-gray-900 mb-2">
                 No slideshows yet
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-800 mb-6">
                 Create your first digital signage slideshow to get started
               </p>
               <Button onClick={createSlideshow}>
@@ -312,7 +312,7 @@ export function SlideshowDashboard({ organizationId }: SlideshowDashboardProps) 
                   <div className="flex-1 min-w-0">
                     <CardTitle className="text-lg truncate">{slideshow.name}</CardTitle>
                     {slideshow.description && (
-                      <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                      <p className="text-sm text-gray-700 mt-1 line-clamp-2">
                         {slideshow.description}
                       </p>
                     )}
@@ -369,7 +369,7 @@ export function SlideshowDashboard({ organizationId }: SlideshowDashboardProps) 
                 </div>
 
                 {/* Slideshow Stats */}
-                <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
+                <div className="flex items-center justify-between text-sm text-gray-700 mb-4">
                   <span>{slideshow.slideshow_slides?.length || 0} slides</span>
                   <span>{slideshow.view_count} views</span>
                 </div>
