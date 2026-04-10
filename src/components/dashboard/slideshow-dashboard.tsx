@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { supabase } from '@/lib/supabase'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { SlideshowWithSlides, CreateSlideshow } from '@/types/database'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -18,8 +18,23 @@ export function SlideshowDashboard({ organizationId }: SlideshowDashboardProps) 
   const [selectedSlideshow, setSelectedSlideshow] = useState<SlideshowWithSlides | null>(null)
   const [showBuilder, setShowBuilder] = useState(false)
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null)
+  const [supabase, setSupabase] = useState<any>(null)
+  const [isInitialized, setIsInitialized] = useState(false)
+
+  // Initialize Supabase client safely
+  useEffect(() => {
+    try {
+      const client = createClientComponentClient()
+      setSupabase(client)
+      setIsInitialized(true)
+    } catch (err) {
+      console.error('Failed to initialize Supabase client:', err)
+    }
+  }, [])
 
   const loadSlideshows = useCallback(async () => {
+    if (!supabase) return
+    
     try {
       const { data, error } = await supabase
         .from('slideshows')
@@ -52,11 +67,13 @@ export function SlideshowDashboard({ organizationId }: SlideshowDashboardProps) 
     } finally {
       setLoading(false)
     }
-  }, [organizationId])
+  }, [organizationId, supabase])
 
   useEffect(() => {
-    loadSlideshows()
-  }, [loadSlideshows])
+    if (isInitialized) {
+      loadSlideshows()
+    }
+  }, [isInitialized, loadSlideshows])
 
   async function createSlideshow() {
     setSelectedSlideshow(null)
@@ -69,6 +86,8 @@ export function SlideshowDashboard({ organizationId }: SlideshowDashboardProps) 
   }
 
   async function duplicateSlideshow(slideshow: SlideshowWithSlides) {
+    if (!supabase) return
+    
     try {
       const user = await supabase.auth.getUser()
       if (!user.data.user) return
@@ -112,7 +131,7 @@ export function SlideshowDashboard({ organizationId }: SlideshowDashboardProps) 
   }
 
   async function deleteSlideshow(slideshowId: string) {
-    if (!confirm('Are you sure you want to delete this slideshow?')) return
+    if (!supabase || !confirm('Are you sure you want to delete this slideshow?')) return
 
     try {
       const { error } = await supabase
@@ -151,6 +170,18 @@ export function SlideshowDashboard({ organizationId }: SlideshowDashboardProps) 
   function openDisplay(slideshowId: string) {
     const url = `/display/${slideshowId}`
     window.open(url, '_blank')
+  }
+
+  // Show loading until Supabase is ready
+  if (!isInitialized || !supabase) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Initializing...</p>
+        </div>
+      </div>
+    )
   }
 
   if (showBuilder) {
