@@ -1,0 +1,52 @@
+name: Build and Validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Type checking
+      run: npm run type-check
+      
+    - name: Lint
+      run: npm run lint
+      
+    - name: Build application
+      run: npm run build
+      env:
+        # Use dummy values for build testing
+        NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR1bW15Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2MTU1NDEyOTIsImV4cCI6MTkzMTExNzI5Mn0.dummy
+        SUPABASE_SERVICE_ROLE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR1bW15Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTYxNTU0MTI5MiwiZXhwIjoxOTMxMTE3MjkyfQ.dummy
+        
+    - name: Check migrations
+      run: npm run db:migrate
+      
+    - name: Migration Status
+      run: |
+        echo "✅ Build successful!"
+        echo "📋 Migration files checked - see build logs above"
+        echo "🚀 Vercel will auto-deploy on main branch push"
+        echo ""
+        echo "⚠️  Manual migration required:"
+        echo "   1. Go to Supabase SQL Editor"
+        echo "   2. Run any new migration files in supabase/migrations/"
+        echo "   3. Verify application works correctly"
