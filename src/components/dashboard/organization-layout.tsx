@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Database, Organization, Role, User } from '@/types/database'
@@ -14,10 +14,21 @@ interface OrganizationLayoutProps {
 
 export function OrganizationLayout({ children, organization, userRole, user }: OrganizationLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [supabase, setSupabase] = useState<any>(null)
   const router = useRouter()
-  const supabase = createClientComponentClient<Database>()
+
+  // Initialize Supabase client safely
+  useEffect(() => {
+    try {
+      const client = createClientComponentClient<Database>()
+      setSupabase(client)
+    } catch (err) {
+      console.error('Failed to initialize Supabase client:', err)
+    }
+  }, [])
   
   const handleSignOut = async () => {
+    if (!supabase) return
     await supabase.auth.signOut()
     router.push('/')
   }
