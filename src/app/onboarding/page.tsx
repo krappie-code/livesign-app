@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
@@ -11,9 +11,39 @@ export default function OnboardingPage() {
   const [slug, setSlug] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [supabase, setSupabase] = useState<any>(null)
+  const [isInitialized, setIsInitialized] = useState(false)
   
   const router = useRouter()
-  const supabase = createClientComponentClient()
+
+  // Initialize Supabase client safely
+  useEffect(() => {
+    try {
+      console.log('Initializing Supabase client...')
+      console.log('URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
+      console.log('Key present:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+      
+      const client = createClientComponentClient()
+      setSupabase(client)
+      setIsInitialized(true)
+      console.log('Supabase client initialized successfully')
+    } catch (err) {
+      console.error('Failed to initialize Supabase client:', err)
+      setError('Failed to initialize application. Please refresh the page.')
+    }
+  }, [])
+
+  // Don't render form until Supabase is ready
+  if (!isInitialized) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Initializing application...</p>
+        </div>
+      </div>
+    )
+  }
 
   // Generate slug from organization name
   const generateSlug = (name: string) => {
@@ -31,6 +61,11 @@ export default function OnboardingPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!supabase) {
+      setError('Application not ready. Please refresh the page.')
+      return
+    }
     
     if (!organizationName.trim() || !slug.trim()) {
       setError('Organization name is required')
@@ -133,6 +168,13 @@ export default function OnboardingPage() {
                 <p className="text-sm text-red-600">{error}</p>
               </div>
             )}
+            
+            {/* Debug info - remove this later */}
+            <div className="bg-blue-50 border border-blue-200 rounded-md p-4 text-xs">
+              <p className="text-blue-600">
+                Debug: Supabase client {supabase ? '✅ Ready' : '❌ Not ready'}
+              </p>
+            </div>
             
             <div>
               <label htmlFor="organizationName" className="block text-sm font-medium text-gray-700 mb-2">
