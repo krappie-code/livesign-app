@@ -144,7 +144,7 @@ export default function OnboardingPage() {
                 value={organizationName}
                 onChange={handleNameChange}
                 placeholder="e.g. My Company, ACME Corp, John&apos;s Restaurant"
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 required
                 disabled={isLoading}
               />
@@ -164,7 +164,7 @@ export default function OnboardingPage() {
                   value={slug}
                   onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
                   placeholder="my-company"
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-none rounded-r-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-none rounded-r-md shadow-sm placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   required
                   disabled={isLoading}
                 />
