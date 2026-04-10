@@ -143,7 +143,7 @@ export default function OnboardingPage() {
                 type="text"
                 value={organizationName}
                 onChange={handleNameChange}
-                placeholder="e.g. My Company, ACME Corp, John's Restaurant"
+                placeholder="e.g. My Company, ACME Corp, John&apos;s Restaurant"
                 className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 required
                 disabled={isLoading}
@@ -170,7 +170,7 @@ export default function OnboardingPage() {
                 />
               </div>
               <p className="mt-1 text-xs text-gray-500">
-                This will be your organization's unique URL. Only letters, numbers, and hyphens allowed.
+                This will be your organization&apos;s unique URL. Only letters, numbers, and hyphens allowed.
               </p>
             </div>
 
@@ -191,7 +191,7 @@ export default function OnboardingPage() {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">What you'll get</span>
+                <span className="px-2 bg-white text-gray-500">What you&apos;ll get</span>
               </div>
             </div>
             
