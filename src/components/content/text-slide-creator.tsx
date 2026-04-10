@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { HexColorPicker } from 'react-colorful'
-import { supabase } from '@/lib/supabase'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Content, CreateContent } from '@/types/database'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -34,6 +34,19 @@ export function TextSlideCreator({
   const [showBgColorPicker, setShowBgColorPicker] = useState(false)
   const [showTextColorPicker, setShowTextColorPicker] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [supabase, setSupabase] = useState<any>(null)
+  const [isInitialized, setIsInitialized] = useState(false)
+
+  // Initialize Supabase client safely
+  useEffect(() => {
+    try {
+      const client = createClientComponentClient()
+      setSupabase(client)
+      setIsInitialized(true)
+    } catch (err) {
+      console.error('Failed to initialize Supabase client:', err)
+    }
+  }, [])
 
   const fontOptions = [
     'Inter',
@@ -49,7 +62,7 @@ export function TextSlideCreator({
   const fontSizeOptions = [16, 20, 24, 32, 40, 48, 56, 64, 72, 96]
 
   async function handleSave() {
-    if (!formData.name.trim()) return
+    if (!supabase || !formData.name.trim()) return
 
     setSaving(true)
     try {
@@ -96,6 +109,18 @@ export function TextSlideCreator({
     } finally {
       setSaving(false)
     }
+  }
+
+  // Show loading until Supabase is ready
+  if (!isInitialized || !supabase) {
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white rounded-lg p-8 text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading editor...</p>
+        </div>
+      </div>
+    )
   }
 
   return (

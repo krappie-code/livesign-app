@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { SlideshowWithSlides, CreateDisplaySession } from '@/types/database'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -37,10 +37,26 @@ export default function DisplayPage() {
   const intervalRef = useRef<NodeJS.Timeout>()
   const pingIntervalRef = useRef<NodeJS.Timeout>()
   const totalSlidesViewed = useRef(0)
+  const [supabase, setSupabase] = useState<any>(null)
+  const [isInitialized, setIsInitialized] = useState(false)
+
+  // Initialize Supabase client safely
+  useEffect(() => {
+    try {
+      const client = createClientComponentClient()
+      setSupabase(client)
+      setIsInitialized(true)
+    } catch (err) {
+      console.error('Failed to initialize Supabase client:', err)
+      setError('Failed to initialize display system')
+    }
+  }, [])
 
   // Load slideshow data
   useEffect(() => {
     async function loadSlideshow() {
+      if (!supabase) return
+      
       try {
         const { data, error } = await supabase
           .from('slideshows')
@@ -118,10 +134,10 @@ export default function DisplayPage() {
       }
     }
 
-    if (slideshowId) {
+    if (isInitialized && slideshowId) {
       loadSlideshow()
     }
-  }, [slideshowId, sessionId])
+  }, [slideshowId, sessionId, isInitialized, supabase])
 
   // Auto-advance slides
   const nextSlide = useCallback(() => {
@@ -154,7 +170,7 @@ export default function DisplayPage() {
 
   // Periodic session ping for analytics
   useEffect(() => {
-    if (slides.length === 0) return
+    if (!supabase || slides.length === 0) return
 
     pingIntervalRef.current = setInterval(async () => {
       const totalDuration = Math.floor((Date.now() - sessionStartTime.current) / 1000)
@@ -179,6 +195,8 @@ export default function DisplayPage() {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
+      if (!supabase) return
+      
       // End session
       const totalDuration = Math.floor((Date.now() - sessionStartTime.current) / 1000)
       
@@ -234,12 +252,14 @@ export default function DisplayPage() {
     }
   }, [])
 
-  if (loading) {
+  if (!isInitialized || !supabase || loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-white text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-white mx-auto mb-4"></div>
-          <p className="text-xl">Loading slideshow...</p>
+          <p className="text-xl">
+            {!isInitialized ? 'Initializing display...' : 'Loading slideshow...'}
+          </p>
         </div>
       </div>
     )

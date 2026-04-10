@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { supabase } from '@/lib/supabase'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Content, CreateContent } from '@/types/database'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -25,6 +25,19 @@ export function ContentLibrary({
   const [loading, setLoading] = useState(true)
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({})
   const [showTextCreator, setShowTextCreator] = useState(false)
+  const [supabase, setSupabase] = useState<any>(null)
+  const [isInitialized, setIsInitialized] = useState(false)
+
+  // Initialize Supabase client safely
+  useEffect(() => {
+    try {
+      const client = createClientComponentClient()
+      setSupabase(client)
+      setIsInitialized(true)
+    } catch (err) {
+      console.error('Failed to initialize Supabase client:', err)
+    }
+  }, [])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
@@ -35,6 +48,8 @@ export function ContentLibrary({
   })
 
   const loadContent = useCallback(async () => {
+    if (!supabase) return
+    
     try {
       const { data, error } = await supabase
         .from('content')
@@ -49,11 +64,13 @@ export function ContentLibrary({
     } finally {
       setLoading(false)
     }
-  }, [organizationId])
+  }, [organizationId, supabase])
 
   useEffect(() => {
-    loadContent()
-  }, [loadContent])
+    if (isInitialized) {
+      loadContent()
+    }
+  }, [isInitialized, loadContent])
 
   async function handleFileDrop(acceptedFiles: File[]) {
     for (const file of acceptedFiles) {
@@ -62,6 +79,8 @@ export function ContentLibrary({
   }
 
   async function uploadImage(file: File) {
+    if (!supabase) return
+    
     const fileId = Math.random().toString(36).substring(7)
     setUploadProgress(prev => ({ ...prev, [fileId]: 0 }))
 
@@ -134,6 +153,8 @@ export function ContentLibrary({
   }
 
   async function deleteContent(contentId: string) {
+    if (!supabase) return
+    
     try {
       const contentItem = content.find(c => c.id === contentId)
       if (!contentItem) return
@@ -169,6 +190,18 @@ export function ContentLibrary({
 
   const isSelected = (contentItem: Content) => {
     return selectedContent.some(c => c.id === contentItem.id)
+  }
+
+  // Show loading until Supabase is ready
+  if (!isInitialized || !supabase) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading content library...</p>
+        </div>
+      </div>
+    )
   }
 
   if (loading) {

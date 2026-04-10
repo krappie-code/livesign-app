@@ -5,7 +5,7 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { supabase } from '@/lib/supabase'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Content, Slideshow, SlideshowSlide, CreateSlideshow, CreateSlideshowSlide, SlideshowWithSlides } from '@/types/database'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -136,6 +136,19 @@ export function SlideshowBuilder({
   const [showPreview, setShowPreview] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [supabase, setSupabase] = useState<any>(null)
+  const [isInitialized, setIsInitialized] = useState(false)
+
+  // Initialize Supabase client safely
+  useEffect(() => {
+    try {
+      const client = createClientComponentClient()
+      setSupabase(client)
+      setIsInitialized(true)
+    } catch (err) {
+      console.error('Failed to initialize Supabase client:', err)
+    }
+  }, [])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -215,7 +228,7 @@ export function SlideshowBuilder({
   }
 
   async function handleSave() {
-    if (!formData.name.trim()) return
+    if (!supabase || !formData.name.trim()) return
 
     setSaving(true)
     try {
@@ -295,6 +308,18 @@ export function SlideshowBuilder({
     } finally {
       setSaving(false)
     }
+  }
+
+  // Show loading until Supabase is ready
+  if (!isInitialized || !supabase) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading slideshow builder...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
