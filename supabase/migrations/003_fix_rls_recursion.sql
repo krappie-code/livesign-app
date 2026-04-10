@@ -25,7 +25,7 @@ CREATE POLICY "Allow user role creation" ON user_roles
       SELECT 1 FROM user_roles ur
       JOIN roles r ON ur.role_id = r.id
       WHERE ur.user_id = auth.uid()
-      AND ur.organization_id = NEW.organization_id
+      AND ur.organization_id = organization_id
       AND r.name IN ('owner', 'admin')
     )
   );
