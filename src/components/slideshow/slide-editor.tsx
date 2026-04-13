@@ -1,11 +1,12 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { Edit, Image as ImageIcon, Clock, Upload } from 'lucide-react'
+import { Edit, Image as ImageIcon, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Content } from '@/types/database'
 import { TextSlideCreator } from '../content/text-slide-creator'
+import { ImageSlideCreator } from '../content/image-slide-creator'
 
 interface SlideItem {
   id: string
@@ -52,6 +53,11 @@ export function SlideEditor({
   const handleTextSlideUpdate = useCallback((updatedContent: Content) => {
     onUpdate(updatedContent)
     setShowTextEditor(false)
+  }, [onUpdate])
+
+  const handleImageSlideUpdate = useCallback((updatedContent: Content) => {
+    onUpdate(updatedContent)
+    setShowImageUpload(false)
   }, [onUpdate])
 
   return (
@@ -224,22 +230,14 @@ export function SlideEditor({
         />
       )}
 
-      {/* Image Upload Modal - Placeholder */}
+      {/* Image Slide Editor Modal */}
       {showImageUpload && slide.content.type === 'image' && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <Card className="w-full max-w-md">
-            <CardContent className="p-6 text-center">
-              <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">Image Upload</h3>
-              <p className="text-gray-600 mb-4">
-                Image editing functionality coming soon!
-              </p>
-              <Button onClick={() => setShowImageUpload(false)}>
-                Close
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+        <ImageSlideCreator
+          organizationId={organizationId}
+          editContent={slide.content}
+          onSave={handleImageSlideUpdate}
+          onCancel={() => setShowImageUpload(false)}
+        />
       )}
     </div>
   )

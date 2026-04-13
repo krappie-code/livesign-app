@@ -10,9 +10,11 @@ import { Card, CardContent } from '@/components/ui/card'
 import { SlideThumbnail } from './slide-thumbnail'
 import { SlideEditor } from './slide-editor'
 import { SlideToolbar } from './slide-toolbar'
+import { SlidePropertiesPanel } from './slide-properties-panel'
 import { SlideshowPreview } from './slideshow-preview'
 import { SlideshowSettings } from './slideshow-settings'
 import { TextSlideCreator } from '../content/text-slide-creator'
+import { ImageSlideCreator } from '../content/image-slide-creator'
 import { v4 as uuidv4 } from 'uuid'
 
 interface GoogleSlidesBuilderProps {
@@ -50,6 +52,7 @@ export function GoogleSlidesBuilder({
   const [showSettings, setShowSettings] = useState(false)
   const [showTextCreator, setShowTextCreator] = useState(false)
   const [showImageUpload, setShowImageUpload] = useState(false)
+  const [isPropertiesPanelCollapsed, setIsPropertiesPanelCollapsed] = useState(true)
   const [saving, setSaving] = useState(false)
   const [supabase, setSupabase] = useState<any>(null)
   const [isInitialized, setIsInitialized] = useState(false)
@@ -138,6 +141,19 @@ export function GoogleSlidesBuilder({
     setShowTextCreator(false)
   }, [slides.length, formData.default_slide_duration])
 
+  const handleImageSlideCreated = useCallback((imageContent: Content) => {
+    const newSlide: SlideItem = {
+      id: uuidv4(),
+      content: imageContent,
+      duration: formData.default_slide_duration,
+      order: slides.length + 1
+    }
+    
+    setSlides(prev => [...prev, newSlide])
+    setSelectedSlideIndex(slides.length) // Select the new slide
+    setShowImageUpload(false)
+  }, [slides.length, formData.default_slide_duration])
+
   const handleSlideSelect = useCallback((index: number) => {
     setSelectedSlideIndex(index)
   }, [])
@@ -176,6 +192,16 @@ export function GoogleSlidesBuilder({
       setSlides(prev => prev.map(slide => 
         slide.id === selectedSlide.id ? { ...slide, content: updatedContent } : slide
       ))
+    }
+  }, [selectedSlide])
+
+  const handlePropertiesPanelEdit = useCallback(() => {
+    if (selectedSlide) {
+      if (selectedSlide.content.type === 'text') {
+        setShowTextCreator(true)
+      } else if (selectedSlide.content.type === 'image') {
+        setShowImageUpload(true)
+      }
     }
   }, [selectedSlide])
 
@@ -333,27 +359,39 @@ export function GoogleSlidesBuilder({
         </div>
 
         {/* Central Editing Area */}
-        <div className="flex-1 flex flex-col">
-          {selectedSlide ? (
-            <SlideEditor
-              slide={selectedSlide}
-              slideIndex={selectedSlideIndex}
-              organizationId={organizationId}
-              onUpdate={handleSlideUpdate}
-              onDurationChange={(duration) => handleSlideDurationChange(selectedSlideIndex, duration)}
-            />
-          ) : (
-            <div className="flex-1 flex items-center justify-center">
-              <div className="text-center text-gray-500">
-                <div className="text-6xl mb-4">📊</div>
-                <h3 className="text-xl font-medium mb-2">No slides yet</h3>
-                <p className="text-gray-400 mb-6">Add your first slide to get started</p>
-                <Button onClick={handleAddTextSlide}>
-                  Add Text Slide
-                </Button>
+        <div className="flex-1 flex">
+          <div className="flex-1 flex flex-col">
+            {selectedSlide ? (
+              <SlideEditor
+                slide={selectedSlide}
+                slideIndex={selectedSlideIndex}
+                organizationId={organizationId}
+                onUpdate={handleSlideUpdate}
+                onDurationChange={(duration) => handleSlideDurationChange(selectedSlideIndex, duration)}
+              />
+            ) : (
+              <div className="flex-1 flex items-center justify-center">
+                <div className="text-center text-gray-500">
+                  <div className="text-6xl mb-4">📊</div>
+                  <h3 className="text-xl font-medium mb-2">No slides yet</h3>
+                  <p className="text-gray-400 mb-6">Add your first slide to get started</p>
+                  <Button onClick={handleAddTextSlide}>
+                    Add Text Slide
+                  </Button>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
+
+          {/* Right Panel - Slide Properties */}
+          <SlidePropertiesPanel
+            slide={selectedSlide}
+            slideIndex={selectedSlideIndex}
+            onDurationChange={(duration) => handleSlideDurationChange(selectedSlideIndex, duration)}
+            onEdit={handlePropertiesPanelEdit}
+            isCollapsed={isPropertiesPanelCollapsed}
+            onToggleCollapse={() => setIsPropertiesPanelCollapsed(!isPropertiesPanelCollapsed)}
+          />
         </div>
       </div>
 
@@ -382,8 +420,33 @@ export function GoogleSlidesBuilder({
       {showTextCreator && (
         <TextSlideCreator
           organizationId={organizationId}
-          onSave={handleTextSlideCreated}
+          editContent={selectedSlide?.content.type === 'text' ? selectedSlide.content : undefined}
+          onSave={(content) => {
+            if (selectedSlide?.content.type === 'text') {
+              handleSlideUpdate(content)
+            } else {
+              handleTextSlideCreated(content)
+            }
+            setShowTextCreator(false)
+          }}
           onCancel={() => setShowTextCreator(false)}
+        />
+      )}
+
+      {/* Image Slide Creator Modal */}
+      {showImageUpload && (
+        <ImageSlideCreator
+          organizationId={organizationId}
+          editContent={selectedSlide?.content.type === 'image' ? selectedSlide.content : undefined}
+          onSave={(content) => {
+            if (selectedSlide?.content.type === 'image') {
+              handleSlideUpdate(content)
+            } else {
+              handleImageSlideCreated(content)
+            }
+            setShowImageUpload(false)
+          }}
+          onCancel={() => setShowImageUpload(false)}
         />
       )}
     </div>
