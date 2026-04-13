@@ -318,7 +318,7 @@ export function GoogleSlidesBuilder({
 
       <div className="flex flex-1 overflow-hidden">
         {/* Left Sidebar - Slide Thumbnails */}
-        <div className="w-60 bg-white border-r border-gray-200 flex flex-col">
+        <div className="hidden md:flex md:w-60 bg-white border-r border-gray-200 flex-col">
           <div className="p-4 border-b border-gray-200">
             <h3 className="text-sm font-medium text-gray-900">Slides</h3>
           </div>
@@ -370,29 +370,82 @@ export function GoogleSlidesBuilder({
                 onDurationChange={(duration) => handleSlideDurationChange(selectedSlideIndex, duration)}
               />
             ) : (
-              <div className="flex-1 flex items-center justify-center">
-                <div className="text-center text-gray-500">
-                  <div className="text-6xl mb-4">📊</div>
-                  <h3 className="text-xl font-medium mb-2">No slides yet</h3>
-                  <p className="text-gray-400 mb-6">Add your first slide to get started</p>
-                  <Button onClick={handleAddTextSlide}>
-                    Add Text Slide
-                  </Button>
+              <div className="flex-1 flex items-center justify-center p-4">
+                <div className="text-center text-gray-500 max-w-md">
+                  <div className="text-4xl md:text-6xl mb-4">📊</div>
+                  <h3 className="text-lg md:text-xl font-medium mb-2">No slides yet</h3>
+                  <p className="text-sm md:text-base text-gray-400 mb-6">Add your first slide to get started</p>
+                  <div className="space-y-2">
+                    <Button onClick={handleAddTextSlide} className="w-full sm:w-auto">
+                      Add Text Slide
+                    </Button>
+                    <Button onClick={handleAddImageSlide} variant="outline" className="w-full sm:w-auto sm:ml-2">
+                      Add Image Slide
+                    </Button>
+                  </div>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Right Panel - Slide Properties */}
-          <SlidePropertiesPanel
-            slide={selectedSlide}
-            slideIndex={selectedSlideIndex}
-            onDurationChange={(duration) => handleSlideDurationChange(selectedSlideIndex, duration)}
-            onEdit={handlePropertiesPanelEdit}
-            isCollapsed={isPropertiesPanelCollapsed}
-            onToggleCollapse={() => setIsPropertiesPanelCollapsed(!isPropertiesPanelCollapsed)}
-          />
+          {/* Right Panel - Slide Properties (Hidden on mobile) */}
+          <div className="hidden lg:block">
+            <SlidePropertiesPanel
+              slide={selectedSlide}
+              slideIndex={selectedSlideIndex}
+              onDurationChange={(duration) => handleSlideDurationChange(selectedSlideIndex, duration)}
+              onEdit={handlePropertiesPanelEdit}
+              isCollapsed={isPropertiesPanelCollapsed}
+              onToggleCollapse={() => setIsPropertiesPanelCollapsed(!isPropertiesPanelCollapsed)}
+            />
+          </div>
         </div>
+      </div>
+
+      {/* Mobile Slide Navigation */}
+      <div className="md:hidden bg-white border-t border-gray-200 p-3 overflow-x-auto">
+        {slides.length > 0 ? (
+          <div className="flex gap-2">
+            {slides.map((slide, index) => (
+              <button
+                key={slide.id}
+                onClick={() => handleSlideSelect(index)}
+                className={`
+                  flex-shrink-0 w-20 h-14 rounded border-2 overflow-hidden transition-colors
+                  ${selectedSlideIndex === index 
+                    ? 'border-blue-500 bg-blue-50' 
+                    : 'border-gray-200 bg-white'
+                  }
+                `}
+              >
+                {slide.content.type === 'image' ? (
+                  <img
+                    src={slide.content.thumbnail_url || slide.content.file_url!}
+                    alt={slide.content.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div
+                    className="w-full h-full flex items-center justify-center text-[8px] p-1"
+                    style={{
+                      backgroundColor: slide.content.background_color,
+                      color: slide.content.text_color
+                    }}
+                  >
+                    {slide.content.title || slide.content.content_text || 'Text'}
+                  </div>
+                )}
+                <div className="absolute inset-x-0 bottom-0 bg-black/70 text-white text-[10px] text-center py-0.5">
+                  {index + 1}
+                </div>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center text-gray-500 py-2">
+            <p className="text-sm">No slides yet. Use the toolbar to add slides.</p>
+          </div>
+        )}
       </div>
 
       {/* Settings Modal */}

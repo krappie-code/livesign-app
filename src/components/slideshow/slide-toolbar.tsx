@@ -58,24 +58,24 @@ export function SlideToolbar({
   }
 
   return (
-    <div className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
+    <div className="bg-white border-b border-gray-200 px-3 md:px-6 py-3 flex items-center justify-between">
       {/* Left Section */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
         {/* Back Button */}
         {onCancel && (
           <Button
             variant="ghost"
             size="sm"
             onClick={onCancel}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 flex-shrink-0"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back
+            <span className="hidden sm:inline">Back</span>
           </Button>
         )}
 
         {/* Slideshow Name */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
           {isEditingName ? (
             <input
               type="text"
@@ -83,12 +83,12 @@ export function SlideToolbar({
               onChange={(e) => setTempName(e.target.value)}
               onBlur={handleNameSubmit}
               onKeyDown={handleNameKeyDown}
-              className="text-lg font-medium bg-transparent border-b border-blue-500 focus:outline-none min-w-0"
+              className="text-sm md:text-lg font-medium bg-transparent border-b border-blue-500 focus:outline-none min-w-0 w-full"
               autoFocus
             />
           ) : (
             <h1 
-              className="text-lg font-medium cursor-pointer hover:text-blue-600 transition-colors"
+              className="text-sm md:text-lg font-medium cursor-pointer hover:text-blue-600 transition-colors truncate"
               onClick={() => {
                 setTempName(slideshowName)
                 setIsEditingName(true)
@@ -100,8 +100,8 @@ export function SlideToolbar({
         </div>
       </div>
 
-      {/* Center Section - Actions */}
-      <div className="flex items-center gap-3">
+      {/* Center Section - Actions (Hidden on very small screens) */}
+      <div className="hidden lg:flex items-center gap-3">
         {/* Add Slide Dropdown */}
         <div className="relative">
           <Button
@@ -179,7 +179,7 @@ export function SlideToolbar({
           className="flex items-center gap-2"
         >
           <Play className="h-4 w-4" />
-          Play Slideshow
+          <span className="hidden xl:inline">Play Slideshow</span>
         </Button>
 
         {/* Settings */}
@@ -189,19 +189,49 @@ export function SlideToolbar({
           className="flex items-center gap-2"
         >
           <Settings className="h-4 w-4" />
-          Settings
+          <span className="hidden xl:inline">Settings</span>
         </Button>
       </div>
 
+      {/* Mobile Action Buttons */}
+      <div className="flex lg:hidden items-center gap-1">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onAddTextSlide}
+          className="p-2"
+        >
+          <Type className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onAddImageSlide}
+          className="p-2"
+        >
+          <ImageIcon className="h-4 w-4" />
+        </Button>
+        {hasSlides && (
+          <Button
+            onClick={onPlaySlideshow}
+            size="sm"
+            className="p-2"
+          >
+            <Play className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
+
       {/* Right Section - Save Actions */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-shrink-0 ml-2">
         <Button
           onClick={onSave}
           disabled={saving || !slideshowName.trim()}
+          size="sm"
           className="flex items-center gap-2"
         >
           <Save className="h-4 w-4" />
-          {saving ? 'Saving...' : 'Save'}
+          <span className="hidden sm:inline">{saving ? 'Saving...' : 'Save'}</span>
         </Button>
       </div>
     </div>
