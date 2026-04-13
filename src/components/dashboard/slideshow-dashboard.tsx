@@ -6,7 +6,7 @@ import { SlideshowWithSlides, CreateSlideshow } from '@/types/database'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Plus, Play, Edit, Copy, Trash2, Share, Eye, ExternalLink } from 'lucide-react'
-import { SlideshowBuilder } from '../slideshow/slideshow-builder'
+import { GoogleSlidesBuilder } from '../slideshow/google-slides-builder'
 
 interface SlideshowDashboardProps {
   organizationId: string
@@ -186,7 +186,7 @@ export function SlideshowDashboard({ organizationId }: SlideshowDashboardProps) 
 
   if (showBuilder) {
     return (
-      <SlideshowBuilder
+      <GoogleSlidesBuilder
         organizationId={organizationId}
         slideshow={selectedSlideshow || undefined}
         onSave={() => {

@@ -1,0 +1,209 @@
+'use client'
+
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { 
+  Play, 
+  Save, 
+  Settings, 
+  Type, 
+  Image as ImageIcon,
+  ArrowLeft,
+  ChevronDown
+} from 'lucide-react'
+
+interface SlideToolbarProps {
+  slideshowName: string
+  onNameChange: (name: string) => void
+  onAddTextSlide: () => void
+  onAddImageSlide: () => void
+  onPlaySlideshow: () => void
+  onSettings: () => void
+  onSave: () => void
+  onCancel?: () => void
+  saving: boolean
+  hasSlides: boolean
+}
+
+export function SlideToolbar({
+  slideshowName,
+  onNameChange,
+  onAddTextSlide,
+  onAddImageSlide,
+  onPlaySlideshow,
+  onSettings,
+  onSave,
+  onCancel,
+  saving,
+  hasSlides
+}: SlideToolbarProps) {
+  const [isEditingName, setIsEditingName] = useState(false)
+  const [tempName, setTempName] = useState(slideshowName)
+  const [showAddDropdown, setShowAddDropdown] = useState(false)
+
+  const handleNameSubmit = () => {
+    if (tempName.trim()) {
+      onNameChange(tempName.trim())
+      setIsEditingName(false)
+    }
+  }
+
+  const handleNameKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleNameSubmit()
+    } else if (e.key === 'Escape') {
+      setTempName(slideshowName)
+      setIsEditingName(false)
+    }
+  }
+
+  return (
+    <div className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
+      {/* Left Section */}
+      <div className="flex items-center gap-4">
+        {/* Back Button */}
+        {onCancel && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onCancel}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </Button>
+        )}
+
+        {/* Slideshow Name */}
+        <div className="flex items-center gap-2">
+          {isEditingName ? (
+            <input
+              type="text"
+              value={tempName}
+              onChange={(e) => setTempName(e.target.value)}
+              onBlur={handleNameSubmit}
+              onKeyDown={handleNameKeyDown}
+              className="text-lg font-medium bg-transparent border-b border-blue-500 focus:outline-none min-w-0"
+              autoFocus
+            />
+          ) : (
+            <h1 
+              className="text-lg font-medium cursor-pointer hover:text-blue-600 transition-colors"
+              onClick={() => {
+                setTempName(slideshowName)
+                setIsEditingName(true)
+              }}
+            >
+              {slideshowName}
+            </h1>
+          )}
+        </div>
+      </div>
+
+      {/* Center Section - Actions */}
+      <div className="flex items-center gap-3">
+        {/* Add Slide Dropdown */}
+        <div className="relative">
+          <Button
+            variant="outline"
+            onClick={() => setShowAddDropdown(!showAddDropdown)}
+            className="flex items-center gap-2"
+          >
+            <Type className="h-4 w-4" />
+            Add Slide
+            <ChevronDown className="h-3 w-3" />
+          </Button>
+
+          {showAddDropdown && (
+            <div className="absolute top-full mt-1 left-0 bg-white border border-gray-200 rounded-md shadow-lg z-10 min-w-[160px]">
+              <button
+                onClick={() => {
+                  onAddTextSlide()
+                  setShowAddDropdown(false)
+                }}
+                className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2"
+              >
+                <Type className="h-4 w-4 text-green-600" />
+                Text Slide
+              </button>
+              <button
+                onClick={() => {
+                  onAddImageSlide()
+                  setShowAddDropdown(false)
+                }}
+                className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2"
+              >
+                <ImageIcon className="h-4 w-4 text-blue-600" />
+                Image Slide
+              </button>
+            </div>
+          )}
+
+          {/* Backdrop to close dropdown */}
+          {showAddDropdown && (
+            <div 
+              className="fixed inset-0 z-0" 
+              onClick={() => setShowAddDropdown(false)} 
+            />
+          )}
+        </div>
+
+        {/* Quick Add Buttons */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onAddTextSlide}
+          className="flex items-center gap-2"
+        >
+          <Type className="h-4 w-4" />
+          Text
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onAddImageSlide}
+          className="flex items-center gap-2"
+        >
+          <ImageIcon className="h-4 w-4" />
+          Image
+        </Button>
+
+        {/* Separator */}
+        <div className="h-6 w-px bg-gray-300 mx-1" />
+
+        {/* Play Slideshow */}
+        <Button
+          onClick={onPlaySlideshow}
+          disabled={!hasSlides}
+          className="flex items-center gap-2"
+        >
+          <Play className="h-4 w-4" />
+          Play Slideshow
+        </Button>
+
+        {/* Settings */}
+        <Button
+          variant="outline"
+          onClick={onSettings}
+          className="flex items-center gap-2"
+        >
+          <Settings className="h-4 w-4" />
+          Settings
+        </Button>
+      </div>
+
+      {/* Right Section - Save Actions */}
+      <div className="flex items-center gap-2">
+        <Button
+          onClick={onSave}
+          disabled={saving || !slideshowName.trim()}
+          className="flex items-center gap-2"
+        >
+          <Save className="h-4 w-4" />
+          {saving ? 'Saving...' : 'Save'}
+        </Button>
+      </div>
+    </div>
+  )
+}
